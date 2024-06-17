@@ -1,0 +1,39 @@
+import requests
+import random
+import time
+from datetime import datetime
+
+# Bot token and chat ID
+TOKEN = '6538319207:AAEcOwti6kNi_R11fcyUIPohkhXpSUkzU_8'
+CHAT_ID = '7278980034'
+
+def send_meme():
+    # Fetch a random meme from the specified subreddit
+    url = 'https://meme-api.herokuapp.com/gimme/memes'
+    response = requests.get(url)
+    data = response.json()
+    
+    meme_url = data['url']
+    
+    # Send the meme to the Telegram group
+    requests.post(f'https://api.telegram.org/bot{TOKEN}/sendPhoto', data={'chat_id': CHAT_ID, 'photo': meme_url})
+
+def handle_command(command):
+    if command == '/post':
+        send_meme()
+    elif command == '/stop':
+        exit()
+
+def main():
+    while True:
+        now = datetime.now()
+        
+        # Check for commands every minute
+        if now.hour == 9 and now.minute == 0:
+            send_meme()
+        
+        # Sleep for 1 minute
+        time.sleep(60)
+
+if __name__ == '__main__':
+    main()
